@@ -16,19 +16,21 @@ import { FeedbackService } from './feedback.service';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ApiBearerAuth, ApiTags, 
-  ApiOperation,
-  ApiResponse,
-  ApiParam, } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { ChangeStatusDto } from './dto/change-status.dto';
 import { FeedbackTimeline } from '../feedback/feedback-timeline.entity';
 import { GetFeedbackDto } from './dto/get-feedback.dto';
+import { AttachmentsService } from './attachments.service';
+import { CreateAttachmentDto } from './dto/create-attachment.dto';
 
 @ApiTags('Feedbacks')
 @ApiBearerAuth('JWT')
 @Controller('feedbacks')
 export class FeedbackController {
-  constructor(private readonly feedbackService: FeedbackService) {}
+  constructor(
+    private readonly feedbackService: FeedbackService,
+    private readonly attachmentsService: AttachmentsService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -99,5 +101,28 @@ export class FeedbackController {
     @Req() req: any,
   ) {
     return this.feedbackService.changeStatus(+id, dto, { userId: req.user.userId });
+  }
+
+  @Post(':id/attachments')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Add attachment to feedback' })
+  @ApiResponse({ status: 201, description: 'Attachment created' })
+  createAttachment(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreateAttachmentDto,
+  ) {
+    return this.attachmentsService.create(id, dto);
+  }
+
+  @Get(':id/attachments')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List attachments for a feedback' })
+  @ApiResponse({ status: 200, description: 'Array of attachments' })
+  listAttachments(
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.attachmentsService.findByFeedback(id);
   }
 }
