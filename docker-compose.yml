@@ -12,6 +12,19 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data_2:/var/lib/postgresql/data
+  
+  mongodb:
+    image: mongo
+    container_name: mongodb_dev
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_2:/data/db
 
 volumes:
   postgres_data_2:
+  mongodb_data_2:
