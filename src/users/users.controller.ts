@@ -13,6 +13,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'User successfully created.' })
   async create(@Body() createUserDto: CreateUserDto): Promise<Users> {
@@ -30,6 +31,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiResponse({ status: 200, description: 'User found.' })
   @ApiResponse({ status: 404, description: 'Not Found' })
@@ -39,6 +41,7 @@ export class UserController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update user data' })
   @ApiResponse({ status: 200, description: 'User successfully updated.' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -47,6 +50,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete user (soft delete)' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 200, description: 'User successfully deleted.' })
