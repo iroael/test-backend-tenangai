@@ -60,7 +60,10 @@ $ npm run test:cov
 ```
 
 ## Access 
+
+```bash
 http://localhost:3334/docs/api/v1
+```
 
 ## Deployment
 
