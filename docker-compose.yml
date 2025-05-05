@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres2:
+    image: postgres:15
+    container_name: postgres_dev2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: myappdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_2:/var/lib/postgresql/data
+
+volumes:
+  postgres_data_2:
