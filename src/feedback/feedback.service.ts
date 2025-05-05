@@ -4,8 +4,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not } from 'typeorm';
-import { Cron } from '@nestjs/schedule';
+import { Repository } from 'typeorm';
 
 import { Feedback } from './feedback.entity';
 import { FeedbackTimeline } from './feedback-timeline.entity';
@@ -15,6 +14,7 @@ import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
 import { ChangeStatusDto } from './dto/change-status.dto';
 import { Users } from '../users/users.entity'; // Sesuaikan path jika beda
+import { GetFeedbackDto } from './dto/get-feedback.dto';
 
 @Injectable()
 export class FeedbackService {
@@ -54,8 +54,52 @@ export class FeedbackService {
     return savedFeedback;
   }
 
-  findAll(): Promise<Feedback[]> {
-    return this.feedbackRepo.find();
+  async findAll(query: GetFeedbackDto) {
+    const {
+      page = 1,
+      limit = 10,
+      category,
+      status,
+      dateFrom,
+      dateTo,
+      sortBy = 'created_at',
+      sortOrder = 'DESC',
+    } = query;
+
+    const qb = this.feedbackRepo.createQueryBuilder('f');
+
+    // Filters
+    if (category) {
+      qb.andWhere('f.category = :category', { category });
+    }
+    if (status) {
+      qb.andWhere('f.status = :status', { status });
+    }
+    if (dateFrom) {
+      qb.andWhere('f.created_at >= :dateFrom', { dateFrom });
+    }
+    if (dateTo) {
+      qb.andWhere('f.created_at <= :dateTo', { dateTo });
+    }
+
+    // Total count before pagination
+    const total = await qb.getCount();
+
+    // Sorting
+    qb.orderBy(`f.${sortBy}`, sortOrder);
+
+    // Pagination
+    qb.skip((page - 1) * limit).take(limit);
+
+    // Execute
+    const data = await qb.getMany();
+
+    return {
+      page,
+      limit,
+      total,
+      data,
+    };
   }
 
   async findOne(id: number): Promise<Feedback> {

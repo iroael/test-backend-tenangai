@@ -9,7 +9,7 @@ import {
   Put,
   Request,
   Patch,
-  Req,
+  Req,Query,
   ParseIntPipe,
 } from '@nestjs/common';
 import { FeedbackService } from './feedback.service';
@@ -22,6 +22,7 @@ import { ApiBearerAuth, ApiTags,
   ApiParam, } from '@nestjs/swagger';
 import { ChangeStatusDto } from './dto/change-status.dto';
 import { FeedbackTimeline } from '../feedback/feedback-timeline.entity';
+import { GetFeedbackDto } from './dto/get-feedback.dto';
 
 @ApiTags('Feedbacks')
 @ApiBearerAuth('JWT')
@@ -37,9 +38,13 @@ export class FeedbackController {
     return this.feedbackService.create(dto, req.user); // req.user = { id, email }
   }
 
+  
   @Get()
-  findAll() {
-    return this.feedbackService.findAll();
+  async findAllAdmin(
+    @Query() query: GetFeedbackDto,
+    @Request() req: any,
+  ) {
+    return this.feedbackService.findAll(query);
   }
 
   @Get(':id')

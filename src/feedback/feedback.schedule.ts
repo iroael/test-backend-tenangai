@@ -22,7 +22,7 @@ export class FeedbackScheduler {
   ) {}
 
   // Cron dijalankan setiap 10 detik (untuk testing)
-  @Cron('*/5 * * * * *')
+//   @Cron('*/30 * * * * *')
   async remindUsersNoFeedback() {
     const thresholdDays = 1;
     const thresholdDate = new Date();
