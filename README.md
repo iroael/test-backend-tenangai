@@ -31,6 +31,9 @@
 ```bash
 $ npm install
 $ rename env.example to be .env
+$ docker compose up -d
+$ docker exec -it postgres_dev2 psql -U postgres
+$ CREATE DATABASE myappdb;
 ```
 
 ## Compile and run the project
